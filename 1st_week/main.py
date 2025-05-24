@@ -41,13 +41,13 @@ def pdf_text_splitter_faiss_indexing(query):
 def __main__():
     pdf_text_splitter_faiss_indexing("2025 고용 전망은 어떠한가?")
 
-    graph = create_graph()
+    # graph = create_graph()
 
-    graph_image = graph.get_graph().draw_mermaid_png()
+    # graph_image = graph.get_graph().draw_mermaid_png()
 
-    output_path = "debate_graph.png"
-    with open(output_path, "wb") as f:
-        f.write(graph_image)
+    # output_path = "debate_graph.png"
+    # with open(output_path, "wb") as f:
+    #     f.write(graph_image)
 
 
 if __name__ == "__main__":
