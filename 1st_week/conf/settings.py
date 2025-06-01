@@ -15,7 +15,7 @@ class config:
             openai_api_key=self.AOAI_API_KEY,
             azure_endpoint=self.AOAI_ENDPOINT,
             azure_deployment="gpt-4o",
-            # api_version="2024-05-01-preview",
+            api_version="2024-05-01-preview",
             # temperature=0.7,
             streaming=True,
         )
