@@ -10,6 +10,14 @@ from conf.settings import config
 # 환경 변수 로드
 load_dotenv()
 
+# 환경 변수에서 API 키와 모델 설정
+api_key = os.getenv("AOAI_API_KEY", "")
+model_name = os.getenv("AOAI_DEPLOY_GPT4O")
+
+# API 키가 설정되어 있으면 config에도 설정
+if api_key:
+    config.AOAI_API_KEY = api_key
+
 # 페이지 설정
 st.set_page_config(page_title="AI 기반 TODO 생성기", page_icon="✅", layout="wide")
 
@@ -38,20 +46,16 @@ st.markdown(
 """
 )
 
-# 사이드바에 API 키 입력
+# 사이드바 - API 키 입력 부분 제거하고 사용 방법만 표시
 with st.sidebar:
     st.header("설정")
-    api_key = st.text_input(
-        "OpenAI API 키", type="password", value=os.getenv("AOAI_API_KEY", "")
-    )
-    model_name = st.selectbox(
-        "사용할 모델", ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo"], index=0
-    )
 
+    # API 키 상태 표시
     if api_key:
-        os.environ["AOAI_API_KEY"] = api_key
-        # conf 모듈의 config 객체에도 API 키 설정
-        config.AOAI_API_KEY = api_key
+        st.success("✅ API 키가 설정되었습니다")
+        st.info(f"사용 모델: {model_name}")
+    else:
+        st.error("❌ API 키가 설정되지 않았습니다. .env 파일을 확인해주세요.")
 
     st.markdown("---")
     st.markdown("### 사용 방법")
@@ -82,19 +86,18 @@ if st.session_state.current_step == "goal_input":
             st.session_state.task_state = initialize_state(goal_input)
             st.session_state.goal = goal_input
 
-            # 그래프 실행
-            for event in st.session_state.graph.stream(st.session_state.task_state):
-                if event["status"] == "completed" and event["output"]:
-                    output = event["output"].get("output", "")
-                    if output:
-                        st.session_state.messages.append(
-                            {"role": "assistant", "content": output}
-                        )
+            # 그래프 실행 - 초기 실행 (analyze_goal → generate_todos → recommend_schedule → review_plan)
+            result = st.session_state.graph.invoke(st.session_state.task_state)
 
-                    # 다음 단계로 이동
-                    if event["output"].get("current_node") == "review_plan":
-                        st.session_state.current_step = "review"
-                        break
+            # 결과에서 출력 메시지들을 추출
+            if "output" in result and result["output"]:
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": result["output"]}
+                )
+
+            # review_plan 단계로 이동
+            st.session_state.current_step = "review"
+            st.session_state.task_state = result
 
             st.rerun()
 
@@ -122,19 +125,21 @@ elif st.session_state.current_step == "review":
             # 사용자 입력 처리
             st.session_state.task_state["human_input"] = user_input
 
-            # 그래프 실행
-            for event in st.session_state.graph.stream(st.session_state.task_state):
-                if event["status"] == "completed" and event["output"]:
-                    output = event["output"].get("output", "")
-                    if output:
-                        st.session_state.messages.append(
-                            {"role": "assistant", "content": output}
-                        )
+            # 그래프 실행 - 사용자 입력 처리
+            result = st.session_state.graph.invoke(st.session_state.task_state)
 
-                    # 최종 출력이면 결과 단계로 이동
-                    if event["output"].get("current_node") == "final_output":
-                        st.session_state.current_step = "result"
-                        break
+            # 결과에서 출력 메시지 추출
+            if "output" in result and result["output"]:
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": result["output"]}
+                )
+
+            # 최종 출력이면 결과 단계로 이동
+            if result.get("current_node") == "final_output":
+                st.session_state.current_step = "result"
+
+            # 상태 업데이트
+            st.session_state.task_state = result
 
             st.rerun()
 

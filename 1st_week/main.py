@@ -34,7 +34,7 @@ def pdf_text_splitter_faiss_indexing(query):
     state = State(query=query, context=rst, messages=[], response="")
 
     llm_state = graph.invoke(state)
-
+    print("=================")
     print(llm_state["response"])
 
 

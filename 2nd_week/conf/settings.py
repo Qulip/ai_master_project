@@ -1,29 +1,35 @@
 from dotenv import load_dotenv
 from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
-import os
-
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
 
 
-class config:
-    AOAI_API_KEY: str = os.getenv("AOAI_API_KEY")
-    AOAI_ENDPOINT: str = os.getenv("AOAI_ENDPOINT")
+class config(BaseSettings):
+    AOAI_API_KEY: str
+    AOAI_ENDPOINT: str
+    AOAI_API_VERSION: str
+    # AOAI_DEPLOY_GPT4O: str
+    # AOAI_EMBEDDING_DEPLOYMENT: str
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 
     def get_llm(self):
         return AzureChatOpenAI(
             openai_api_key=self.AOAI_API_KEY,
             azure_endpoint=self.AOAI_ENDPOINT,
+            # azure_deployment=self.AOAI_DEPLOY_GPT4O,
+            api_version=self.AOAI_API_VERSION,
             azure_deployment="gpt-4o",
-            # api_version="2024-05-01-preview",
-            # temperature=0.7,
+            temperature=0.7,
             streaming=True,
         )
 
     def get_embeddings(self):
         return AzureOpenAIEmbeddings(
+            # model=self.AOAI_EMBEDDING_DEPLOYMENT,
             model="text-embedding-3-large",
-            # openai_api_version=self.AOAI_API_VERSION,
+            openai_api_version=self.AOAI_API_VERSION,
             api_key=self.AOAI_API_KEY,
             azure_endpoint=self.AOAI_ENDPOINT,
         )

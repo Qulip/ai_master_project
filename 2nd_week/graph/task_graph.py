@@ -20,14 +20,15 @@ class TaskState(TypedDict):
     current_node: str
     human_input: str
     output: str
+    next: str
 
 
-def create_task_graph() -> StateGraph:
+def create_task_graph():
     """
     TODO 생성 및 일정 추천을 위한 LangGraph 흐름을 생성합니다.
 
     Returns:
-        LangGraph 상태 그래프
+        컴파일된 LangGraph 실행 그래프
     """
     # 에이전트 초기화 - 싱글톤 패턴 활용
     task_planner = TaskPlannerAgent()
@@ -150,7 +151,7 @@ def create_task_graph() -> StateGraph:
         return state
 
     # 6. 사용자 입력 처리 노드
-    def process_human_input(state: TaskState) -> Dict[str, str]:
+    def process_human_input(state: TaskState) -> TaskState:
         human_input = state["human_input"].lower()
         context = state["context"]
 
@@ -160,16 +161,19 @@ def create_task_graph() -> StateGraph:
         # 사용자 입력에 따른 다음 노드 결정
         if "수정" in human_input or "변경" in human_input:
             if "할일" in human_input or "todo" in human_input:
-                return {"next": "generate_todos"}
+                state["next"] = "generate_todos"
             elif "일정" in human_input or "스케줄" in human_input:
-                return {"next": "recommend_schedule"}
+                state["next"] = "recommend_schedule"
         elif "검토" in human_input:
-            return {"next": "review_plan"}
+            state["next"] = "review_plan"
         elif "완료" in human_input or "종료" in human_input:
-            return {"next": "final_output"}
+            state["next"] = "final_output"
+        else:
+            # 기본적으로 검토 단계로 이동
+            state["next"] = "review_plan"
 
-        # 기본적으로 검토 단계로 이동
-        return {"next": "review_plan"}
+        state["current_node"] = "process_human_input"
+        return state
 
     # 노드 추가
     graph.add_node("analyze_goal", analyze_goal)
@@ -183,33 +187,45 @@ def create_task_graph() -> StateGraph:
     graph.add_edge("analyze_goal", "generate_todos")
     graph.add_edge("generate_todos", "recommend_schedule")
     graph.add_edge("recommend_schedule", "review_plan")
-    graph.add_edge("review_plan", "process_human_input")
-    graph.add_edge(
-        "process_human_input",
-        "generate_todos",
-        condition=lambda state: state["next"] == "generate_todos",
-    )
-    graph.add_edge(
-        "process_human_input",
-        "recommend_schedule",
-        condition=lambda state: state["next"] == "recommend_schedule",
-    )
-    graph.add_edge(
-        "process_human_input",
+
+    # 초기 실행에서는 review_plan에서 종료
+    # 사용자 입력이 있을 때만 process_human_input으로 이동
+    def should_process_human_input(state: TaskState) -> str:
+        """사용자 입력이 있는지 확인하여 다음 노드 결정"""
+        if state.get("human_input", "").strip():
+            return "process_human_input"
+        else:
+            return "END"
+
+    graph.add_conditional_edges(
         "review_plan",
-        condition=lambda state: state["next"] == "review_plan",
+        should_process_human_input,
+        {"process_human_input": "process_human_input", "END": END},
     )
-    graph.add_edge(
+
+    # 조건부 엣지 추가
+    def route_after_human_input(state: TaskState) -> str:
+        """사용자 입력 후 다음 노드를 결정하는 라우팅 함수"""
+        return state.get("next", "review_plan")
+
+    graph.add_conditional_edges(
         "process_human_input",
-        "final_output",
-        condition=lambda state: state["next"] == "final_output",
+        route_after_human_input,
+        {
+            "generate_todos": "generate_todos",
+            "recommend_schedule": "recommend_schedule",
+            "review_plan": "review_plan",
+            "final_output": "final_output",
+        },
     )
+
     graph.add_edge("final_output", END)
 
     # 시작 노드 설정
     graph.set_entry_point("analyze_goal")
 
-    return graph
+    # 그래프 컴파일
+    return graph.compile()
 
 
 def initialize_state(goal: str) -> TaskState:
@@ -234,4 +250,5 @@ def initialize_state(goal: str) -> TaskState:
         "current_node": "",
         "human_input": "",
         "output": "",
+        "next": "",
     }

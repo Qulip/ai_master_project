@@ -11,7 +11,7 @@ class SchedulerAgent:
     할 일 목록을 바탕으로 일정을 추천하는 에이전트
     """
 
-    def __init__(self, model_name: str = "gpt-3.5-turbo"):
+    def __init__(self):
         self.model = get_llm()
         self.output_parser = JsonOutputParser()
 
@@ -19,40 +19,36 @@ class SchedulerAgent:
             [
                 (
                     "system",
-                    """
-            당신은 할 일 목록을 바탕으로 효율적인 일정을 추천하는 전문가입니다.
+                    """당신은 할 일 목록을 바탕으로 효율적인 일정을 추천하는 전문가입니다.
             
-            사용자의 할 일 목록과 목표 기간을 바탕으로, 각 할 일에 대한 시작일과 종료일을 추천하세요.
-            일정은 현실적이고 효율적이어야 합니다. 작업 간의 의존성과 우선순위를 고려하세요.
-            
-            결과는 다음 JSON 형식으로 반환하세요:
-            {
-                "start_date": "YYYY-MM-DD",
-                "tasks": [
-                    {
-                        "title": "할 일 제목",
-                        "area": "작업 영역",
-                        "duration_days": 1,
-                        "start_day_offset": 0  // 시작일로부터의 오프셋(일)
-                    },
-                    ...
-                ]
-            }
-            """,
+사용자의 할 일 목록과 목표 기간을 바탕으로, 각 할 일에 대한 시작일과 종료일을 추천하세요.
+일정은 현실적이고 효율적이어야 합니다. 작업 간의 의존성과 우선순위를 고려하세요.
+
+결과는 다음 JSON 형식으로 반환하세요:
+{{
+    "start_date": "YYYY-MM-DD",
+    "tasks": [
+        {{
+            "title": "할 일 제목",
+            "area": "작업 영역",
+            "duration_days": 1,
+            "start_day_offset": 0
+        }},
+        ...
+    ]
+}}""",
                 ),
                 (
                     "user",
-                    """
-            목표: {goal}
-            
-            목표 기간: {duration} 일
-            
-            할 일 목록:
-            {todos_json}
-            
-            위 할 일 목록을 바탕으로 {duration}일 이내에 완료할 수 있는 효율적인 일정을 추천해주세요.
-            오늘({today})부터 시작한다고 가정합니다.
-            """,
+                    """목표: {goal}
+
+목표 기간: {duration} 일
+
+할 일 목록:
+{todos_json}
+
+위 할 일 목록을 바탕으로 {duration}일 이내에 완료할 수 있는 효율적인 일정을 추천해주세요.
+오늘({today})부터 시작한다고 가정합니다.""",
                 ),
             ]
         )
