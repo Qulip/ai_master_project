@@ -112,3 +112,8 @@ watchdog==6.0.0
 wrapt==1.17.2
 yarl==1.19.0
 zstandard==0.23.0
+google-cloud-core==2.4.1
+google-cloud-functions==1.16.5
+google-auth==2.34.0
+google-api-core==2.21.0
+google-cloud-pubsub==2.26.1

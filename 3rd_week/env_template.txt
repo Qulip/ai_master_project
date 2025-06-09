@@ -1,0 +1,12 @@
+# Azure OpenAI 설정
+AOAI_API_KEY=your_azure_openai_api_key
+AOAI_ENDPOINT=https://your-azure-openai-endpoint.openai.azure.com/
+AOAI_API_VERSION=2024-02-15-preview
+
+# Google Cloud 설정
+GCP_PROJECT_ID=your-google-cloud-project-id
+GCP_TOPIC_PREFIX=agent-communication
+GCP_REGION=asia-northeast3
+
+# Google Cloud 인증 (선택사항 - 서비스 계정 키 파일 사용시)
+# GOOGLE_APPLICATION_CREDENTIALS=path/to/your/service-account-key.json 
