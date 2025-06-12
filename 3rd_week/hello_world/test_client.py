@@ -14,16 +14,16 @@ from a2a.types import (  # A2A 통신에 필요한 타입들
 
 
 async def main() -> None:  # 비동기 메인 함수 정의
-    PUBLIC_AGENT_CARD_PATH = "/.well-known/agent.json"  # 공개 에이전트 카드 경로
+    PUBLIC_AGENT_CARD_PATH = '/.well-known/agent.json'  # 공개 에이전트 카드 경로
     EXTENDED_AGENT_CARD_PATH = (
-        "/agent/authenticatedExtendedCard"  # 확장 에이전트 카드 경로
+        '/agent/authenticatedExtendedCard'  # 확장 에이전트 카드 경로
     )
 
     # Configure logging to show INFO level messages
     logging.basicConfig(level=logging.INFO)  # 로깅 레벨을 INFO로 설정
     logger = logging.getLogger(__name__)  # 현재 모듈의 로거 인스턴스 생성
 
-    base_url = "http://localhost:9999"  # A2A 서버의 기본 URL
+    base_url = 'http://localhost:9999'  # A2A 서버의 기본 URL
 
     async with httpx.AsyncClient() as httpx_client:  # HTTP 클라이언트 생성 (비동기 컨텍스트 매니저)
         # Initialize A2ACardResolver
@@ -44,13 +44,13 @@ async def main() -> None:  # 비동기 메인 함수 정의
             _public_card = (  # 공개 에이전트 카드 가져오기
                 await resolver.get_agent_card()
             )  # Fetches from default public path
-            logger.info("Successfully fetched public agent card:")  # 성공 로그
+            logger.info('Successfully fetched public agent card:')  # 성공 로그
             logger.info(  # 가져온 카드 정보를 JSON 형태로 로그 출력
                 _public_card.model_dump_json(indent=2, exclude_none=True)
             )
             final_agent_card_to_use = _public_card  # 공개 카드를 최종 사용 카드로 설정
             logger.info(
-                "\nUsing PUBLIC agent card for client initialization (default)."
+                '\nUsing PUBLIC agent card for client initialization (default).'
             )
 
             if (
