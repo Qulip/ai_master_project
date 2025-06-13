@@ -1,18 +1,14 @@
 import streamlit as st
-import pandas as pd
-from datetime import datetime
-import base64
-import time
 
 # 페이지 설정
 st.set_page_config(
-    page_title="GenSpark - AI 슬라이드",
+    page_title="클라우드 거버넌스 자동화 AI",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# 커스텀 CSS - GenSpark 스타일 완전 복제
+# 커스텀 CSS
 st.markdown(
     """
 <style>
@@ -141,7 +137,7 @@ st.markdown(
         line-height: 1.5;
     }
     
-    /* GenSpark 로고 영역 */
+    /* 로고 영역 */
     .logo-container {
         display: flex;
         align-items: center;
@@ -219,12 +215,11 @@ st.markdown(
 
 # 사이드바 구성
 with st.sidebar:
-    # GenSpark 로고
     st.markdown(
         """
     <div class="logo-container">
         <span style="font-size: 1.5rem;">🤖</span>
-        <span class="logo-text">GenSpark</span>
+        <span class="logo-text">클라우드 거버넌스 자동화 AI</span>
     </div>
     """,
         unsafe_allow_html=True,
@@ -233,13 +228,8 @@ with st.sidebar:
     # 메뉴 항목들
     menu_items = [
         ("🏠", "홈"),
-        ("⭐", "슈퍼 에이전트"),
         ("📊", "AI 슬라이드", True),  # 현재 활성화된 메뉴
-        ("🌐", "AI 사이트"),
-        ("💬", "AI 채팅"),
-        ("🔵", "모든 에이전트"),
-        ("💾", "AI 드라이브"),
-        ("👤", "나"),
+        ("🌐", "AI 거버넌스"),
     ]
 
     for item in menu_items:
