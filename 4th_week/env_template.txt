@@ -1,0 +1,10 @@
+# Azure OpenAI 설정
+# 아래 값들을 실제 Azure OpenAI 설정으로 변경하세요
+
+AOAI_API_KEY=your_azure_openai_api_key_here
+AOAI_ENDPOINT=https://your-resource-name.openai.azure.com/
+AOAI_API_VERSION=2024-02-15-preview
+
+# 선택 사항: 특정 배포 이름을 사용하려면 주석을 해제하고 설정하세요
+# AOAI_DEPLOY_GPT4O=your_gpt4o_deployment_name
+# AOAI_EMBEDDING_DEPLOYMENT=your_embedding_deployment_name 
