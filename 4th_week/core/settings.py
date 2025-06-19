@@ -18,8 +18,8 @@ class config(BaseSettings):
         return AzureChatOpenAI(
             openai_api_key=self.AOAI_API_KEY,
             azure_endpoint=self.AOAI_ENDPOINT,
-            # azure_deployment=self.AOAI_DEPLOY_GPT4O,
             api_version=self.AOAI_API_VERSION,
+            # azure_deployment=self.AOAI_DEPLOY_GPT4O,
             azure_deployment="gpt-4o",
             temperature=0.7,
             streaming=True,
