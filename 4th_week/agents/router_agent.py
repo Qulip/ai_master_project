@@ -35,16 +35,18 @@ class RouterAgent(BaseAgent):
 **가능한 Intent 유형:**
 1. "question" - 클라우드 거버넌스 관련 질문이나 정보 요청
 2. "slide_generation" - 슬라이드나 프레젠테이션 자료 생성 요청
-3. "general" - 일반적인 대화나 인사
+3. "report" - 보고서나 요약 자료 생성 요청
+4. "general" - 일반적인 대화나 인사
 
 **분석 기준:**
 - 슬라이드, 프레젠테이션, PPT, 발표자료 등의 키워드가 있으면 "slide_generation"
+- 보고서, 요약, 리포트, 분석서 등의 키워드가 있으면 "report"
 - 질문문(?, 어떻게, 무엇, 왜 등)이나 정보 요청이면 "question"
 - 그 외는 "general"
 
 **출력 형식 (JSON):**
 {{
-    "intent": "question|slide_generation|general",
+    "intent": "question|slide_generation|report|general",
     "confidence": 0.0-1.0,
     "key_entities": ["추출된", "핵심", "키워드"],
     "analysis": "의도 분석 이유",

@@ -135,11 +135,13 @@ class SlideFormatterTool(BaseTool):
             else:
                 slide_data = self._create_basic_slide(inputs)
 
-            # 마크다운 형식 생성
+            # HTML 및 마크다운 형식 생성
+            html = self._convert_to_html(slide_data, slide_type)
             markdown = self._convert_to_markdown(slide_data, slide_type)
 
             return {
                 "slide": slide_data,
+                "html": html,
                 "markdown": markdown,
                 "mcp_context": {
                     "role": "formatter",
@@ -153,6 +155,7 @@ class SlideFormatterTool(BaseTool):
         except Exception as e:
             return {
                 "slide": {},
+                "html": "",
                 "markdown": "",
                 "mcp_context": {
                     "role": "formatter",
@@ -161,8 +164,232 @@ class SlideFormatterTool(BaseTool):
                 },
             }
 
+    def _convert_to_html(self, slide_data: Dict, slide_type: str) -> str:
+        """슬라이드 데이터를 HTML로 변환"""
+        title = slide_data.get("title", "제목 없음")
+
+        html = f"""
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <style>
+        body {{
+            font-family: 'Segoe UI', 'Malgun Gothic', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }}
+        .slide-container {{
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }}
+        .slide-header {{
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }}
+        .slide-header::before {{
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="70" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }}
+        .slide-header h1 {{
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }}
+        .slide-header .subtitle {{
+            margin-top: 15px;
+            opacity: 0.9;
+            font-size: 1.2rem;
+            position: relative;
+            z-index: 1;
+        }}
+        .slide-content {{
+            padding: 50px;
+        }}
+        .section {{
+            margin-bottom: 40px;
+        }}
+        .section h2 {{
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }}
+        .bullet-list {{
+            list-style: none;
+            padding: 0;
+        }}
+        .bullet-list li {{
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }}
+        .bullet-list li:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }}
+        .bullet-list li::before {{
+            content: '▶';
+            color: #3498db;
+            font-weight: bold;
+            margin-right: 10px;
+        }}
+        .comparison-container {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }}
+        .comparison-column {{
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            border-top: 4px solid #e74c3c;
+        }}
+        .comparison-column:last-child {{
+            border-top-color: #27ae60;
+        }}
+        .comparison-column h3 {{
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.3rem;
+        }}
+        .sub-bullets {{
+            margin-left: 20px;
+            margin-top: 15px;
+        }}
+        .sub-bullets li {{
+            background: #ffffff;
+            border-left-color: #95a5a6;
+            padding: 12px 15px;
+            font-size: 0.9rem;
+        }}
+        .conclusion {{
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 30px;
+        }}
+        .slide-footer {{
+            background: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+        }}
+        @media (max-width: 768px) {{
+            .slide-container {{
+                margin: 10px;
+                border-radius: 10px;
+            }}
+            .slide-header {{
+                padding: 20px;
+            }}
+            .slide-header h1 {{
+                font-size: 1.8rem;
+            }}
+            .slide-content {{
+                padding: 25px;
+            }}
+            .comparison-container {{
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-header">
+            <h1>{title}</h1>
+            <div class="subtitle">클라우드 거버넌스 프레젠테이션</div>
+        </div>
+        <div class="slide-content">
+"""
+
+        if slide_type == "detailed" and slide_data.get("subtitle"):
+            html += f'<div class="section"><h2>{slide_data["subtitle"]}</h2></div>'
+
+        if slide_type == "comparison":
+            html += '<div class="section"><h2>비교 분석</h2>'
+            html += '<div class="comparison-container">'
+            html += f'<div class="comparison-column"><h3>{slide_data["left_column"]["title"]}</h3><ul class="bullet-list">'
+            for item in slide_data["left_column"]["items"]:
+                html += f"<li>{item}</li>"
+            html += f'</ul></div><div class="comparison-column"><h3>{slide_data["right_column"]["title"]}</h3><ul class="bullet-list">'
+            for item in slide_data["right_column"]["items"]:
+                html += f"<li>{item}</li>"
+            html += "</ul></div></div></div>"
+        else:
+            html += (
+                '<div class="section"><h2>📋 핵심 포인트</h2><ul class="bullet-list">'
+            )
+            for bullet in slide_data.get("bullets", []):
+                html += f"<li>{bullet}</li>"
+            html += "</ul></div>"
+
+            if slide_type == "detailed" and slide_data.get("sub_bullets"):
+                html += '<div class="section"><h2>🔍 세부 사항</h2>'
+                for key, sub_items in slide_data["sub_bullets"].items():
+                    html += '<ul class="bullet-list sub-bullets">'
+                    for sub_item in sub_items:
+                        html += f"<li>{sub_item}</li>"
+                    html += "</ul>"
+                html += "</div>"
+
+            if slide_data.get("conclusion"):
+                html += f'<div class="conclusion">💡 {slide_data["conclusion"]}</div>'
+
+        html += "</div>"
+
+        if slide_data.get("notes"):
+            html += f'<div class="slide-footer">{slide_data["notes"]}</div>'
+        else:
+            html += '<div class="slide-footer">클라우드 거버넌스 AI 시스템에서 생성된 슬라이드입니다.</div>'
+
+        html += """
+    </div>
+</body>
+</html>
+"""
+        return html
+
     def _convert_to_markdown(self, slide_data: Dict, slide_type: str) -> str:
-        """슬라이드 데이터를 마크다운으로 변환"""
+        """슬라이드 데이터를 마크다운으로 변환 (호환성을 위해 유지)"""
         markdown = f"# {slide_data.get('title', '제목 없음')}\n\n"
 
         if slide_type == "detailed" and slide_data.get("subtitle"):

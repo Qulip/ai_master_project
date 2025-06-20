@@ -5,7 +5,7 @@ from core import BaseAgent
 class AnswerAgent(BaseAgent):
     """
     Answer Agent
-    Question Agent 또는 SlideGenerator Agent의 결과를
+    Task Management Agent의 결과를
     사용자 응답 형식으로 정제하여 반환하는 최종 에이전트
     """
 
@@ -21,7 +21,7 @@ class AnswerAgent(BaseAgent):
         최종 사용자 응답 생성을 위한 프롬프트 생성
 
         Args:
-            inputs (Dict[str, Any]): Question/SlideGenerator Agent 결과
+            inputs (Dict[str, Any]): Task Management Agent 결과
 
         Returns:
             str: LLM용 프롬프트
@@ -56,32 +56,66 @@ Question Agent가 생성한 답변을 사용자에게 친근하고 이해하기 
 
         elif agent_type == "slide_generation":
             slide_data = inputs.get("slide_data", {})
-            slide_markdown = inputs.get("slide_markdown", "")
+            slide_html = inputs.get("slide_html", "")
 
             prompt = f"""
 당신은 클라우드 거버넌스 AI 어시스턴트입니다.
-SlideGenerator Agent가 생성한 슬라이드를 사용자에게 효과적으로 제시해야 합니다.
+Task Management Agent가 생성한 슬라이드를 사용자에게 효과적으로 제시해야 합니다.
 
-**SlideGenerator Agent 결과:**
+**Task Management Agent 결과:**
 {answer_content}
 
 **생성된 슬라이드 데이터:**
 {slide_data}
 
-**마크다운 형식 슬라이드:**
-{slide_markdown}
+**HTML 형식 슬라이드가 생성되었습니다:**
+- 슬라이드는 HTML 형식으로 생성되어 브라우저에서 볼 수 있습니다
+- 반응형 디자인으로 모바일에서도 잘 보입니다
+- 아름다운 그라데이션과 애니메이션 효과가 적용되었습니다
 
 **응답 작성 지침:**
 1. 슬라이드 생성 완료를 명확하게 알림
 2. 슬라이드의 핵심 내용 요약 제시
-3. 마크다운 형식으로 슬라이드 내용 표시
+3. HTML 형식으로 생성되었음을 안내
 4. 추가 수정이나 다른 형식 요청 가능함을 안내
 5. 전문적이면서도 친근한 어조 유지
 
 **출력 형식:**
-"📊 클라우드 거버넌스 슬라이드가 생성되었습니다!"로 시작하여,
-마크다운 형식의 슬라이드 내용을 포함하고,
+"📊 클라우드 거버넌스 슬라이드가 HTML 형식으로 생성되었습니다!"로 시작하여,
+슬라이드의 핵심 내용 HTML 형식으로 요약하고,
 마지막에 "슬라이드 내용 수정이나 다른 형식을 원하시면 말씀해 주세요!" 등의 안내 문구를 포함하세요.
+"""
+
+        elif agent_type == "report_summary":
+            report_data = inputs.get("report_data", {})
+            report_html = inputs.get("report_html", "")
+
+            prompt = f"""
+당신은 클라우드 거버넌스 AI 어시스턴트입니다.
+Task Management Agent가 생성한 보고서 요약을 사용자에게 효과적으로 제시해야 합니다.
+
+**Task Management Agent 결과:**
+{answer_content}
+
+**생성된 보고서 요약 데이터:**
+{report_data}
+
+**HTML 형식 보고서 요약이 생성되었습니다:**
+- 보고서 요약은 HTML 형식으로 생성되어 브라우저에서 볼 수 있습니다
+- 구조화된 섹션과 시각적 요소가 포함되었습니다
+- 핵심 발견사항과 권고사항이 명확하게 정리되었습니다
+
+**응답 작성 지침:**
+1. 보고서 요약 생성 완료를 명확하게 알림
+2. 보고서의 핵심 내용 요약 제시
+3. HTML 형식으로 생성되었음을 안내
+4. 추가 분석이나 다른 형식 요청 가능함을 안내
+5. 전문적이면서도 친근한 어조 유지
+
+**출력 형식:**
+"📋 클라우드 거버넌스 보고서 요약이 HTML 형식으로 생성되었습니다!"로 시작하여,
+보고서의 핵심 내용을 요약하고,
+마지막에 "보고서 내용 수정이나 추가 분석을 원하시면 말씀해 주세요!" 등의 안내 문구를 포함하세요.
 """
 
         else:

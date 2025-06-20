@@ -121,6 +121,33 @@ class MCPClient:
             format_type=format_type,
         )
 
+    async def summarize_report(
+        self,
+        content: str,
+        title: str = "클라우드 거버넌스 보고서",
+        summary_type: str = "executive",
+        format_type: str = "html",
+    ) -> Dict[str, Any]:
+        """
+        보고서 요약 도구 호출
+
+        Args:
+            content: 요약할 보고서 내용
+            title: 보고서 제목
+            summary_type: 요약 유형 ("executive", "technical", "compliance")
+            format_type: 출력 형식
+
+        Returns:
+            요약된 보고서
+        """
+        return await self.call_tool(
+            "summarize_report",
+            content=content,
+            title=title,
+            summary_type=summary_type,
+            format_type=format_type,
+        )
+
     async def get_tool_status(self) -> Dict[str, Any]:
         """
         MCP 도구 서버 상태 확인
@@ -186,6 +213,23 @@ class SyncMCPClient:
                 )
 
         return self._run_async(_format())
+
+    def summarize_report(
+        self,
+        content: str,
+        title: str = "클라우드 거버넌스 보고서",
+        summary_type: str = "executive",
+        format_type: str = "html",
+    ) -> Dict[str, Any]:
+        """동기식 보고서 요약"""
+
+        async def _summarize():
+            async with MCPClient(self.mcp_server_url) as client:
+                return await client.summarize_report(
+                    content, title, summary_type, format_type
+                )
+
+        return self._run_async(_summarize())
 
     def get_tool_status(self) -> Dict[str, Any]:
         """동기식 도구 상태 확인"""

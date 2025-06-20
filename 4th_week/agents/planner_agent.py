@@ -6,7 +6,7 @@ class PlannerAgent(BaseAgent):
     """
     Planner Agent
     Router Agent의 결과를 바탕으로 어떤 작업을 수행할지 결정
-    Question Agent 또는 SlideGenerator Agent 호출 결정
+    Task Management Agent에 전달할 작업 타입 결정
     """
 
     def __init__(self):
@@ -39,24 +39,26 @@ Router Agent의 분석 결과를 바탕으로 적절한 작업 계획을 수립�
 - Key Entities: {key_entities}
 - Original Input: {user_input}
 
-**사용 가능한 Agent들:**
-1. "QuestionAgent" - 클라우드 거버넌스 질문 응답 전담
-2. "SlideGeneratorAgent" - 슬라이드 생성 전담
-3. "DirectAnswer" - 간단한 인사나 일반 대화 직접 처리
+**사용 가능한 처리 방식:**
+1. "TaskManagementAgent" - 통합 작업 처리 (질문 응답, 슬라이드 생성, 보고서 요약)
+2. "DirectAnswer" - 간단한 인사나 일반 대화 직접 처리
 
 **계획 수립 규칙:**
-- intent가 "question"이면 QuestionAgent 선택
-- intent가 "slide_generation"이면 SlideGeneratorAgent 선택
+- intent가 "question"이면 TaskManagementAgent 선택, task_type: "question"
+- intent가 "slide_generation"이면 TaskManagementAgent 선택, task_type: "slide"
+- intent가 "report"이면 TaskManagementAgent 선택, task_type: "report"
 - intent가 "general"이면 DirectAnswer 선택
 - confidence가 0.5 미만이면 추가 분석 필요
 
 **출력 형식 (JSON):**
 {{
-    "selected_agent": "QuestionAgent|SlideGeneratorAgent|DirectAnswer",
+    "selected_agent": "TaskManagementAgent|DirectAnswer",
     "reasoning": "선택 이유 설명",
     "parameters": {{
         "query": "실제 질문 내용",
+        "task_type": "question|slide|report",
         "slide_type": "basic|detailed|comparison (슬라이드 생성 시)",
+        "summary_type": "executive|technical|compliance (보고서 요약 시)",
         "priority": "high|medium|low"
     }},
     "mcp_context": {{"role": "planner", "status": "success"}}

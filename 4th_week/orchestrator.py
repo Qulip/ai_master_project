@@ -2,8 +2,7 @@ from typing import Dict, Any
 from agents import (
     RouterAgent,
     PlannerAgent,
-    QuestionAgent,
-    SlideGeneratorAgent,
+    TaskManagementAgent,
     AnswerAgent,
 )
 
@@ -17,8 +16,7 @@ class CloudGovernanceOrchestrator:
     def __init__(self):
         self.router_agent = RouterAgent()
         self.planner_agent = PlannerAgent()
-        self.question_agent = QuestionAgent()
-        self.slide_generator_agent = SlideGeneratorAgent()
+        self.task_management_agent = TaskManagementAgent()
         self.answer_agent = AnswerAgent()
 
         self.mcp_context = {
@@ -52,19 +50,13 @@ class CloudGovernanceOrchestrator:
             selected_agent = planner_result.get("selected_agent", "DirectAnswer")
             print(f"   └ Selected Agent: {selected_agent}")
 
-            # 3. 선택된 Agent 실행
+            # 3. Task Management Agent 실행
             agent_result = None
-            if selected_agent == "QuestionAgent":
-                print("❓ Question Agent: 질문 처리 중...")
+            if selected_agent in "TaskManagementAgent":
+                print("🔧 Task Management Agent: 작업 처리 중...")
                 agent_input = {**planner_result, "user_input": user_input}
-                agent_result = self.question_agent(agent_input)
-                print("   └ 질문 처리 완료")
-
-            elif selected_agent == "SlideGeneratorAgent":
-                print("📊 SlideGenerator Agent: 슬라이드 생성 중...")
-                agent_input = {**planner_result, "user_input": user_input}
-                agent_result = self.slide_generator_agent(agent_input)
-                print("   └ 슬라이드 생성 완료")
+                agent_result = self.task_management_agent(agent_input)
+                print("   └ 작업 처리 완료")
 
             else:  # DirectAnswer
                 print("💬 Direct Answer: 직접 응답 처리 중...")
@@ -190,10 +182,13 @@ class CloudGovernanceOrchestrator:
             "agents": {
                 "router": "initialized",
                 "planner": "initialized",
-                "question": "initialized",
-                "slide_generator": "initialized",
+                "task_management": "initialized",
                 "answer": "initialized",
             },
-            "tools": {"rag_retriever": "available", "slide_formatter": "available"},
+            "tools": {
+                "rag_retriever": "available",
+                "slide_formatter": "available",
+                "report_summary": "available",
+            },
             "mcp_context": self.mcp_context,
         }
