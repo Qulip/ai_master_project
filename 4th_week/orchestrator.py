@@ -1,9 +1,11 @@
 from typing import Dict, Any
-from agents.router_agent import RouterAgent
-from agents.planner_agent import PlannerAgent
-from agents.question_agent import QuestionAgent
-from agents.slide_generator_agent import SlideGeneratorAgent
-from agents.answer_agent import AnswerAgent
+from agents import (
+    RouterAgent,
+    PlannerAgent,
+    QuestionAgent,
+    SlideGeneratorAgent,
+    AnswerAgent,
+)
 
 
 class CloudGovernanceOrchestrator:

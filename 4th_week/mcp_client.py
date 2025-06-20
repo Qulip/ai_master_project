@@ -6,9 +6,8 @@ MCP 클라이언트 모듈
 FastMCP 서버와 Model Context Protocol을 통해 통신하는 클라이언트
 """
 
-import json
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 import httpx
 import asyncio
 

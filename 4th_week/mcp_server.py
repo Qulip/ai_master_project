@@ -8,23 +8,17 @@ RAG 검색 및 슬라이드 포맷팅 도구들을 MCP 프로토콜로 제공합
 
 import sys
 import os
-import json
-from typing import Dict, List, Any
+from typing import Dict, Any
 import logging
 
 # 현재 디렉토리를 Python 패스에 추가
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from mcp.server.fastmcp import FastMCP
-from tools.rag_retriever import RAGRetrieverTool
-from tools.slide_formatter import SlideFormatterTool
+from fastmcp import FastMCP
+from tools import RAGRetrieverTool, SlideFormatterTool
 
 # FastMCP 서버 초기화
-mcp = FastMCP(
-    name="cloud-governance-tools",
-    version="1.0.0",
-    description="클라우드 거버넌스 AI 서비스용 MCP 도구 서버",
-)
+mcp = FastMCP(name="cloud-governance-tools")
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -35,8 +29,7 @@ rag_retriever = None
 slide_formatter = None
 
 
-@mcp.on_event("startup")
-async def startup():
+def startup():
     """MCP 서버 시작 시 도구들 초기화"""
     global rag_retriever, slide_formatter
     try:
@@ -55,6 +48,9 @@ async def startup():
     except Exception as e:
         logger.error(f"❌ MCP 도구 초기화 실패: {str(e)}")
         raise
+
+
+startup()
 
 
 @mcp.tool()
@@ -214,4 +210,6 @@ if __name__ == "__main__":
     print("=" * 60)
 
     # MCP 서버 실행
-    uvicorn.run("mcp:mcp", host="0.0.0.0", port=8001, reload=True, log_level="info")
+    uvicorn.run(
+        "mcp_server:mcp", host="0.0.0.0", port=8001, reload=True, log_level="info"
+    )
