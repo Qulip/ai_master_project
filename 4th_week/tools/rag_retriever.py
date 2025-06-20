@@ -1,11 +1,10 @@
 import os
-from typing import Dict, List
+from typing import Dict
 import faiss
 import pickle
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-from core.base_tool import BaseTool
-from core.settings import get_embeddings
+from core import BaseTool, get_embeddings
 
 
 class RAGRetrieverTool(BaseTool):

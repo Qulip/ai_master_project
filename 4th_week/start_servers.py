@@ -12,7 +12,6 @@ import time
 import signal
 import os
 from concurrent.futures import ThreadPoolExecutor
-import threading
 
 
 class ServerManager:

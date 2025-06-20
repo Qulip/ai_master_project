@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from core.base_agent import BaseAgent
+from core import BaseAgent
 
 
 class PlannerAgent(BaseAgent):
